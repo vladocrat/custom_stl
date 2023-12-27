@@ -7,8 +7,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(custom_stl main.cpp
     utils.h
-    vector.h vector.cpp
+    vector.h
     iterator.h
+    print.h
+    algorithm.h
 )
 
 include(GNUInstallDirs)

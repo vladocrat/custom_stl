@@ -27,7 +27,7 @@ public:
     constexpr VectorIterator begin() const noexcept { return VectorIterator { &m_values[0] };      }
     constexpr VectorIterator end()   const noexcept { return VectorIterator { &m_values[m_size] }; }
 
-    Vector(const std::initializer_list<Type>& list) : m_size(list.size())
+    constexpr Vector(const std::initializer_list<Type>& list) : m_size(list.size())
     {
         m_values = new Type[m_capacity];
 
@@ -39,7 +39,7 @@ public:
         }
     }
 
-    Vector() noexcept : m_values { nullptr }
+    constexpr Vector() noexcept : m_values { nullptr }
     {
         m_values = new Type[m_capacity];
     }

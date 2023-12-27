@@ -8,11 +8,11 @@ class Iterator
 public:
     Iterator(T* value) noexcept : m_value { value } {}
     Iterator(const Iterator& other) noexcept: m_value { other.m_value } {}
-    Iterator(Iterator&& other) noexcept : m_value { std::move(other.m_value) } {}
+    Iterator(Iterator&& other) noexcept : m_value { std::exchange(other.m_value, nullptr) } {}
     virtual ~Iterator() noexcept = default;
 
     constexpr auto& operator=(const Iterator& other) noexcept { m_value = other.m_value; return *this;            }
-    constexpr auto& operator=(Iterator&& other)      noexcept { m_value = std::move(other.m_value); return *this; }
+    constexpr auto& operator=(Iterator&& other)      noexcept { m_value = std::exchange(other.m_value, nullptr); return *this; }
 
     [[nodiscard]] constexpr T& operator*()  noexcept { return *m_value; }
     [[nodiscard]] constexpr T* operator->() noexcept { return m_value;  }

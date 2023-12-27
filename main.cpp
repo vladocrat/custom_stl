@@ -25,11 +25,14 @@ struct A : Printable<A>
 
 int main()
 {
-    // A a {10};
-    // println(a);
+    A a {10};
+    println(a);
 
+    Vector vec = {30, 20, 10, 40};
+    //println(*max(vec));
 
-    //Vector vec {30, 20, 10};
+    forEach(vec, [](const int& a){ print(a);});
+    //print(vec);
 
     // println(vec);
     // vec.pushBack(std::move(0));
@@ -43,7 +46,9 @@ int main()
     // println(vec.capacity());
 
     Vector<A> as = { {1}, {3} };
-    //print(as);
+    print(as);
+
+    //allOf(vec, [](const int& a) { return a > 10; });
 
     // Vector<int> v;
     // v.reserve(3);
