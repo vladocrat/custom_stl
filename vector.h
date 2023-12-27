@@ -28,7 +28,10 @@ public:
     constexpr auto begin() const noexcept { return VectorIterator { &m_values[0]      }; }
     constexpr auto end()   const noexcept { return VectorIterator { &m_values[m_size] }; }
 
-    constexpr Vector(const std::initializer_list<Type>& list) : m_size(list.size())
+    constexpr Vector() = default;
+
+    constexpr Vector(std::initializer_list<Type> list) noexcept
+        : m_size { list.size() }
     {
         if (list.size() > m_capacity)
             m_capacity = list.size();
@@ -43,12 +46,25 @@ public:
         }
     }
 
-    constexpr Vector() = default;
+    constexpr Vector(const Vector& other) noexcept
+        : m_size { other.m_size },
+        m_capacity { other.m_capacity }
+    {
+        delete[] m_values;
+        m_values = new Type[other.capacity()];
+        std::copy(other.data(), other.data() + other.size(), m_values);
+    }
+
+    constexpr Vector(Vector&& other) noexcept
+        : m_size { std::move(other.m_size) },
+        m_capacity { std::move(other.m_capacity) },
+        m_values { std::exchange(other.m_values, nullptr) } {}
 
     constexpr auto& operator=(const Vector<Type>& other) noexcept
     {
         m_size = other.size();
         m_capacity = other.capacity();
+        delete[] m_values;
         m_values = new Type[other.capacity()];
 
         std::copy(other.data(), other.data() + other.size(), m_values);
@@ -56,12 +72,39 @@ public:
         return *this;
     }
 
-    ~Vector()
+    constexpr auto& operator=(Vector<Type>&& other) noexcept
+    {
+        m_size = other.size();
+        m_capacity = other.m_capacity;
+        delete[] m_values;
+        m_values = std::move(other.data());
+
+        return *this;
+    }
+
+    constexpr auto& operator=(std::initializer_list<Type> list) noexcept
+    {
+        if (list.size() > m_capacity)
+            m_capacity = list.size();
+
+        m_values = new Type[m_capacity];
+
+        auto ix = 0;
+
+        for (const Type& item : list)
+        {
+            m_values[ix++] = item;
+        }
+
+        return *this;
+    }
+
+    ~Vector() noexcept
     {
         delete[] m_values;
     }
 
-    constexpr void pushBack(const Type& value)
+    constexpr void pushBack(const Type& value) noexcept
     {
         if (m_size == m_capacity)
         {
@@ -83,7 +126,7 @@ public:
         m_values[m_size++] = value;
     }
 
-    constexpr void pushBack(Type&& value)
+    constexpr void pushBack(Type&& value) noexcept
     {
         if (m_size == m_capacity)
         {
@@ -99,7 +142,7 @@ public:
         m_values[m_size++] = std::move(value);
     }
 
-    constexpr void popBack()
+    constexpr void popBack() noexcept
     {
         auto newSize = m_size - 1;
         auto temp = new Type[newSize];

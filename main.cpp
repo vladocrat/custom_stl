@@ -15,7 +15,7 @@ struct A : Printable<A>
     A& operator=(const A& other) { a = other.a; return *this;}
     A& operator=(A&& other) { a = std::move(other.a); return *this; }
     virtual ~A() {
-        ::print("died") << std::endl;
+        ::print<const char*>("died") << std::endl;
     };
 
     const auto print() const noexcept {
@@ -39,12 +39,12 @@ int main()
     println(as.size());
     println(as.capacity());
     print(as) << std::endl;
-    println(*as.begin());
-    println(*as.end()--);
 
-    Vector<A> newv;
-    newv = as;
+    Vector<A> newv(std::move(as));
     print(newv) << std::endl;
+    // newv = as;
+    // newv = {{10}, {40}};
+    // print(newv) << std::endl;
 
     return 0;
 }
