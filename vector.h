@@ -51,12 +51,7 @@ public:
         m_capacity = other.capacity();
         m_values = new Type[other.capacity()];
 
-        for (auto i = 0; i < other.size(); i++)
-        {
-            m_values[i] = other.data()[i];
-        }
-
-        //std::copy(other.data(), other.data() + other.size(), m_values);
+        std::copy(other.data(), other.data() + other.size(), m_values);
 
         return *this;
     }
