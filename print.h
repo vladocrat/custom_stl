@@ -83,11 +83,11 @@ constexpr auto& print(const Container<Type>& c)
 template<typename T>
 constexpr auto& println(const T& t)
 {
-    return print(t) << '\n';
+    return print(t) << "\n";
 }
 
 template<typename T = void>
 constexpr auto& println()
 {
-    return std::cout << '\n';
+    return std::cout << "\n";
 }

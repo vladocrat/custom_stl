@@ -4,12 +4,13 @@
 #include <algorithm>
 
 #include "iterator.h"
+#include "print.h"
 
 namespace Constants
 {
-constexpr static size_t DEFAULT_CAPACITY = 1;
-constexpr static size_t DEFAULT_SIZE     = 0;
-constexpr static float  FACTOR           = 1.5f;
+constexpr static size_t DEFAULT_CAPACITY {  5    };
+constexpr static size_t DEFAULT_SIZE     {  0    };
+constexpr static float  FACTOR           {  1.5f };
 } // Constants
 
 template<class Type, class Allocator = std::allocator<Type>>
@@ -22,13 +23,16 @@ public:
         VectorIterator(Type* val) noexcept : Iterator<Type>(val) { }
     };
 
-    constexpr VectorIterator begin()       noexcept { return VectorIterator { &m_values[0] };      }
-    constexpr VectorIterator end()         noexcept { return VectorIterator { &m_values[m_size] }; }
-    constexpr VectorIterator begin() const noexcept { return VectorIterator { &m_values[0] };      }
-    constexpr VectorIterator end()   const noexcept { return VectorIterator { &m_values[m_size] }; }
+    constexpr auto begin()       noexcept { return VectorIterator { &m_values[0]      }; }
+    constexpr auto end()         noexcept { return VectorIterator { &m_values[m_size] }; }
+    constexpr auto begin() const noexcept { return VectorIterator { &m_values[0]      }; }
+    constexpr auto end()   const noexcept { return VectorIterator { &m_values[m_size] }; }
 
     constexpr Vector(const std::initializer_list<Type>& list) : m_size(list.size())
     {
+        if (list.size() > m_capacity)
+            m_capacity = list.size();
+
         m_values = new Type[m_capacity];
 
         auto ix = 0;
@@ -39,9 +43,22 @@ public:
         }
     }
 
-    constexpr Vector() noexcept : m_values { nullptr }
+    constexpr Vector() = default;
+
+    constexpr auto& operator=(const Vector<Type>& other) noexcept
     {
-        m_values = new Type[m_capacity];
+        m_size = other.size();
+        m_capacity = other.capacity();
+        m_values = new Type[other.capacity()];
+
+        for (auto i = 0; i < other.size(); i++)
+        {
+            m_values[i] = other.data()[i];
+        }
+
+        //std::copy(other.data(), other.data() + other.size(), m_values);
+
+        return *this;
     }
 
     ~Vector()
@@ -65,6 +82,9 @@ public:
             delete[] temp;
         }
 
+        if (m_size == 0)
+            m_values = new Type[m_capacity];
+
         m_values[m_size++] = value;
     }
 
@@ -77,6 +97,9 @@ public:
             delete[] m_values;
             m_values = temp;
         }
+
+        if (m_size == 0)
+            m_values = new Type[m_capacity];
 
         m_values[m_size++] = std::move(value);
     }

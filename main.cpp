@@ -7,74 +7,44 @@
 
 struct A : Printable<A>
 {
-    int a;
-    A() {}
-    A(int b) : a(b) {}
-    A(const A& other) : a(other.a) {}
+    int a = -1;
+    A() {::print("created");}
+    A(int b) : a(b) { ::print("created"); }
+    A(const A& other):  Printable<A>(), a(other.a) { ::print("created"); }
     A(A&& other) { a = std::move(other.a); }
     A& operator=(const A& other) { a = other.a; return *this;}
+    A& operator=(A&& other) { a = std::move(other.a); return *this; }
+    virtual ~A() {
+        ::print("died") << std::endl;
+    };
 
-    const auto print() const noexcept
-    {
+    const auto print() const noexcept {
         return std::string()
-            .append("A: [a=")
-            .append(std::to_string(a))
-            .append("]");
+          .append("A: [a=")
+          .append(std::to_string(a))
+          .append("]");
     }
 };
 
 int main()
 {
-    A a {10};
-    println(a);
+    Vector<A> init {{10},  {20} };
+    println(init);
 
-    Vector vec = {30, 20, 10, 40};
-    //println(*max(vec));
+    Vector<A> as;
+    A a1{1};
+    A a2{2};
+    as.pushBack(std::move(a1));
+    as.pushBack(std::move(a2));
+    println(as.size());
+    println(as.capacity());
+    print(as) << std::endl;
+    println(*as.begin());
+    println(*as.end()--);
 
-    forEach(vec, [](const int& a){ print(a);});
-    //print(vec);
-
-    // println(vec);
-    // vec.pushBack(std::move(0));
-    // println(vec);
-    // vec.pushBack(40);
-    // println(vec);
-
-    // println(vec.isEmpty());
-    // println(vec.isNotEmpty());
-    // println(vec.size());
-    // println(vec.capacity());
-
-    Vector<A> as = { {1}, {3} };
-    print(as);
-
-    //allOf(vec, [](const int& a) { return a > 10; });
-
-    // Vector<int> v;
-    // v.reserve(3);
-    // v.pushBack(std::move(10));
-    // v.pushBack(1);
-    // v.pushBack(std::move(30));
-    // println(v);
-    // v.popBack();
-    // println(v);
-
-    // println(v[0] == v.at(0));
-
-    // std::sort(vec.begin(), vec.end(), [](const auto& first, const auto& second){
-    //     return first < second;
-    // });
-
-
-    // for (auto begin = vec.begin(), end = vec.end(); begin != end; begin++)
-    // {
-    //     println(*begin);
-    // }
-
-    // for (const auto& v : vec)
-    // {
-    //     println(v);
-    // }
+    Vector<A> newv;
+    newv = as;
+    print(newv) << std::endl;
 
     return 0;
 }
